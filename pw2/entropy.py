@@ -2,7 +2,7 @@ import copy
 import numpy as np
 class Entropy:
   def __init__(self, string):
-    self.dict = self.__decompose(string)
+    self.count = self.__decompose(string)
     self.length = len(string)
     self.freq = self.__caclulate_freq()
 
@@ -16,7 +16,7 @@ class Entropy:
     return tmp_dict
 
   def __caclulate_freq(self):
-    freq = copy.deepcopy(self.dict)
+    freq = copy.deepcopy(self.count)
     for c in freq:
       freq[c] /= self.length
     return freq
@@ -28,11 +28,11 @@ class Entropy:
     h *= -1
     return h
 
-  def get_dict(self):
-    return self.dict
+  def get_count(self):
+    return self.count
 
-  def set_dict(self, dict):
-    self.dict = dict
+  def set_count(self, count):
+    self.count = count
   
   def get_length(self):
     return self.length
