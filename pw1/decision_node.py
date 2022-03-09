@@ -1,7 +1,7 @@
 import copy
 import utils
 import numpy as np
-class Decision_Tree:
+class Decision_Node:
   def __init__(self, dataset, N_groups=3, distinctionColumn='Species'):
     self.dataset = dataset
     self.N_groups = N_groups
@@ -85,6 +85,10 @@ class Decision_Tree:
     for i_group in range(len(single_attr_groups_counted[columnName])):
       s -= (self.get_group_size(single_attr_groups_counted[columnName][i_group]) / N ) * single_attr_groups_enropy[columnName][i_group]
     return s
+  def print_discriminative_powers(self):
+    for attr_name in self.get_attr_groups_counted():
+        print(attr_name, ":", self.get_discriminative_power(attr_name))
+
   def get_dataset(self):
     return self.dataset 
   def set_dataset(self, dataset):

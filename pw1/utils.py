@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 def sort_species(dataset, specimen):
     return dataset[dataset['Species'] == specimen]
 
@@ -19,3 +20,6 @@ def entropy_group(group_counted_df, distinctionColumn='Species', N=50):
             s += (n_specimen / N) * np.log2(n_specimen / N)
     s *= -1
     return s
+
+def exclude(left_df, right_df):
+    return pd.merge(left_df,right_df, indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
