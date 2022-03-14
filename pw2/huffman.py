@@ -3,7 +3,12 @@ from node import Node
 from entropy import Entropy
 
 class Huffman:
-  def __init__(self, entropy):
+  def __init__(self, entropy:Entropy):
+    """Initialize an object for Huffman coding.
+
+    Args:
+        entropy (Entropy): Entropy object.
+    """
     nodes = []
     for key in entropy.count:
       nodes.append(Node(key, freq=entropy.count[key]))
@@ -23,6 +28,8 @@ class Huffman:
     self.encoded = None
   
   def bfs_print(self):
+    """Prints a Huffman tree in a visually appealing format.
+    """
     root = self.root
     q = [] 
     explored = []
@@ -42,7 +49,15 @@ class Huffman:
           q.append(child)
           print("<" + str(child.freq) + " " + child.data + ">", end=" ")
 
-  def encode_of(self, chr):
+  def encoding_of(self, chr:str)->str:
+    """Finds an encoding of a given character in Huffman coding.
+
+    Args:
+        chr (str): character
+
+    Returns:
+        str: Encoding of a character.
+    """    
     if not chr in self.encoded:
       raise "Error"
     else:

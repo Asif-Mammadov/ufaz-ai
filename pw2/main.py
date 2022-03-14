@@ -15,4 +15,4 @@ huffman.bfs_print()
 dict = huffman.get_encoded()
 print(dict)
 
-print(huffman.encode_of('d'))
+print(huffman.encoding_of('d'))
