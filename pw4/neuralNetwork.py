@@ -1,5 +1,5 @@
 import numpy as np
-from activation import Sigmoid, Softmax
+from activation import Sigmoid, Softmax, Relu
 from cost import MSE
 import utils
 class NeuralNetwork:
@@ -65,7 +65,7 @@ class NeuralNetwork:
           a = self.activations[j].calc(z)
           self.Z.append(z)
           self.A.append(a)
-        error= self.cost.calc(a, y_train)
+        error= np.sum(self.cost.calc(a, y_train)) / self.batch_size
         print("Error : {}".format(error))
         self.costs.append(error)
 
@@ -75,8 +75,7 @@ class NeuralNetwork:
           dZ = dA * self.activations[j].grad(self.Z[j])
           dw = np.dot(dZ, self.A[j].T)
           db = np.sum(dZ, axis=1, keepdims=True) / self.batch_size
-          if j != 0:
-            dA = np.dot(self.W[j].T, dZ)
+          dA = np.dot(self.W[j].T, dZ)
            
           self.W[j] -= self.lr * dw
           self.B[j] -= self.lr * db
@@ -101,7 +100,7 @@ class NeuralNetwork:
     t = f = 0
     Yhat = self.predict(X_test)
     for i in range(Yhat.shape[1]):
-      if Yhat[:, i].argmax() == Y_test[:, i].argmax():
+      if (Yhat[:, i] == Y_test[:, i]).all():
         t += 1
       else:
         f += 1
@@ -111,6 +110,6 @@ class NeuralNetwork:
   def plot_costs(self):
     import matplotlib.pyplot as plt
     plt.plot(np.arange(self.i_epoch), self.costs)
-    plt.xlabel("Epochs")
+    plt.xlabel("Iterations")
     plt.ylabel("Cost")
     plt.show()
