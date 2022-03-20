@@ -1,4 +1,6 @@
 from html import entities
+
+from numpy import string_
 from node import Node
 from entropy import Entropy
 
@@ -24,6 +26,7 @@ class Huffman:
       nodes.remove(left)
       nodes.remove(right)
 
+    self.string = entropy.string
     self.root = nodes[0]
     self.encoded = None
   
@@ -59,9 +62,45 @@ class Huffman:
         str: Encoding of a character.
     """    
     if not chr in self.encoded:
-      raise "Error"
+      raise ValueError("No such character in the dictionary.") 
     else:
       return self.encoded[chr]
+  
+  def to_encoding(self, string:str)->str:
+    """Converts string to encoding
+
+    Args:
+        string (str): Human readable string.
+
+    Returns:
+        str: Encoded value.
+    """
+    encoded_str = ""
+    for c in string:
+      encoded_str += self.encoding_of(c)
+    return encoded_str
+
+  def to_string(self, encoded_str:str)->str:
+    """Converts encoding to string
+
+    Args:
+        encoded_str (str): Encoded value.
+
+    Returns:
+        str: Decoded string.
+    """
+    new_string = ""
+    i = 0
+    while i < len(encoded_str):
+      node = self.root
+      while not node.isLeaf():
+        if encoded_str[i] == "0":
+          node = node.get_left_child()
+        elif encoded_str[i] == "1":
+          node = node.get_right_child()
+        i += 1
+      new_string += node.get_data()
+    return new_string
 
   def get_encoded(self):
     if not self.encoded:

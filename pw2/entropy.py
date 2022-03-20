@@ -7,7 +7,8 @@ class Entropy:
     Args:
         string (str): String to find entropy.
     """
-    self.count = self.__decompose(string)
+    self.string= string
+    self.count = self.__decompose(self.string)
     self.length = len(string)
     self.freq = self.__caclulate_freq()
 

@@ -11,8 +11,12 @@ print()
 
 huffman = Huffman(e)
 
+print("Huffman Tree")
 huffman.bfs_print()
 dict = huffman.get_encoded()
 print(dict)
 
-print(huffman.encoding_of('d'))
+encoded_str = huffman.to_encoding(string)
+print("Encoded string:\n{}".format(encoded_str))
+
+print("Decoded string:\n{}".format(huffman.to_string(encoded_str)))
