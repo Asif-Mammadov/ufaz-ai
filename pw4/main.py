@@ -11,8 +11,8 @@ Y = utils.createOneHot(df, "Species")
 
 X_train, Y_train, X_test, Y_test = utils.split_train_test(X, Y, test_portion=0.2)
 
-nn = NeuralNetwork(X_train, Y_train, lr=0.1, batch_size=20, cost=MSE)
-nn.add_hidden_layer(5, Relu)
+nn = NeuralNetwork(X_train, Y_train, lr=0.1, batch_size=20, cost=CrossEntropy, normalizeData=False)
+nn.add_hidden_layer(3, Relu)
 nn.info()
 nn.training_epoch(n_iter=5)
 nn.testPrediction(X_test, Y_test)

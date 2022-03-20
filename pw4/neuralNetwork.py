@@ -3,9 +3,12 @@ from activation import Sigmoid
 from cost import MSE
 import utils
 class NeuralNetwork:
-  def __init__(self, X_train, Y_train, lr, cost=MSE, batch_size=None):
+  def __init__(self, X_train, Y_train, lr, cost=MSE, batch_size=None, normalizeData=False):
     self.X_train = X_train
     self.Y_train = Y_train
+    if normalizeData:
+      self.X_train /= self.X_train.max()
+      self.Y_train /= self.Y_train.max()
     self.n_instances = self.X_train.shape[1]
     self.n_attributes = self.X_train.shape[0]
     self.batch_size = batch_size if batch_size else self.n_instances
@@ -19,6 +22,7 @@ class NeuralNetwork:
     self.layers = [X_train.shape[0], Y_train.shape[0]]
     self.costs = []
     self.i_epoch = 0
+    self.normalizeData=normalizeData
 
   def add_hidden_layer(self, n_nodes, activation):
     self.layers.insert(len(self.layers) - 1, n_nodes)
@@ -83,6 +87,8 @@ class NeuralNetwork:
   
   def predict(self, X):
     a = X.copy()
+    if self.normalizeData:
+      a /= a.max()
     for j in range(len(self.W)):
       z = np.dot(self.W[j], a) + self.B[j]
       a = self.activations[j].calc(z)
