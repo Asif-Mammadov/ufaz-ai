@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import activation
+from activation import Relu, Sigmoid, Softmax
 def split_train_test(X: np.ndarray, Y: np.ndarray, test_portion:float=0.2, seed:int=None)->np.ndarray:
   """Splits the data into training and testing sets.
 
@@ -16,6 +16,10 @@ def split_train_test(X: np.ndarray, Y: np.ndarray, test_portion:float=0.2, seed:
   np.random.seed(seed) 
   np.random.shuffle(X)
   np.random.shuffle(Y)
+  p = np.random.permutation(X.shape[1])
+  X = X[:, p]
+  Y = Y[:, p]
+
   data_size = X.shape[1]
   train_size = np.int64(np.floor( (1 - test_portion) * data_size))
   X_train = X[:, :train_size]
@@ -73,37 +77,74 @@ def shuffleTrainingData(X_train: np.ndarray, Y_train: np.ndarray, seed:int=None)
     X_train[:, [i, j]] = X_train[:, [j, i]]
     Y_train[:, [i, j]] = Y_train[:, [j, i]]
 
+def cross_entropy_loss(Yhat, Y):
+  Y[Y == 0] = 1e-16
+  Y[Y == 1] -= 1e-16 
+  return -np.sum(Yhat * np.log2(Y) + (1 - Yhat) * np.log2(1 - Y))
 
-def trainingEpoch(X_train, Y_train, hidden_layers=[5, 5, 3], batch_size=5):
-  input_layer = X_train.shape[0]  
+def mse(Yhat, Y):
+  return np.sum((Yhat - Y) ** 2) / (2 * Y.shape[1])
+
+def d_mse(Yhat, Y):
+  return np.sum((Yhat - Y)) / Y.shape[1]
+
+def cross_entropy(Yhat, Y):
+  cost = (-1/Y.shape[1]) * np.dot(Y, np.log(Yhat).T) + np.dot((1-Y), np.log(1-Yhat).T)
+  return cost
+
+def trainingEpoch(X_train, Y_train, hidden_layers=[3], activations=[Sigmoid, Sigmoid], cost=mse, batch_size=5, alpha=0.1):
+  shuffleTrainingData(X_train, Y_train)
+  input_layer = X_train.shape[0]
   final_layer = Y_train.shape[0]
-  layers = [input_layer] + hidden_layers + [final_layer]
-  print("Layers: {}".format(layers))
+  layers = [input_layer, *hidden_layers, final_layer]
   W = []
   B = []
+  A = []
+  Z = []
+  errors = []
   n_instances = X_train.shape[1]
   shuffleTrainingData(X_train, Y_train)
   i_epoch = 0
   # Generate weights and biases
   for i in range(1, len(layers)):
-    w = np.random.random((layers[i-1], layers[i]))
+    w = np.random.random((layers[i], layers[i-1])) * 0.01
     b = np.zeros((layers[i], 1))
     W.append(w)
     B.append(b)
 
   # Launch epochs
+  # for _ in range(10):
   for i in range(0, n_instances, batch_size):
     print("Epoch {}:".format(i_epoch))
     x_train = X_train[:, i:i+batch_size]
     y_train = Y_train[:, i:i+batch_size]
     # Forward propagation
-    A = x_train
-    for i in range(len(W)):
-      Z = np.dot(W[i].T, A) + B[i]
-      if i == len(W) - 1:
-        A = activation.softmax(Z)
-      else:
-        A = activation.relu(Z)
-    print(A)
-    #TODO : Back propagation
+    a = x_train
+    A.append(a)
+    for j in range(len(W)):
+      z = np.dot(W[j], a) + B[j]
+      a = activations[j].calc(z)
+      Z.append(z)
+      A.append(a)
+    error= cost(a, y_train)
+    errors.append(error)
+
+    # dA = - np.divide(y_train, a) - np.divide(1 - y_train, 1 - a)
+    dA = d_mse(a, y_train)
+    # Backwards propagation
+    for j in range(len(W))[::-1]:
+      dZ = dA * activations[j].grad(Z[j])
+      dw = np.dot(dZ, A[j].T)
+      db = np.sum(dZ, axis=1, keepdims=True) / batch_size
+      if j != 0:
+        dA = np.dot(W[j].T, dZ)
+
+      W[j] -= alpha * dw
+      B[j] -= alpha * db
+
     i_epoch += 1
+  # import matplotlib.pyplot as plt
+  # plt.plot(np.arange(i_epoch), errors)
+  # plt.show()
+  return {"W": W, "B": B, "activations": activations}
+  
