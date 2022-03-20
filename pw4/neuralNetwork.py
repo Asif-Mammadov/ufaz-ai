@@ -1,5 +1,5 @@
 import numpy as np
-from activation import Sigmoid
+from activation import Sigmoid, Softmax
 from cost import MSE
 import utils
 class NeuralNetwork:
@@ -33,16 +33,14 @@ class NeuralNetwork:
     self.activations[index] = activation
 
   def info(self):
-    print("N Training instances: {}\n \
-      N attributes {} \n \
-      Batch size: {} \n \
-      Learning rate: {}".format(self.n_instances, self.n_attributes, self.batch_size, self.lr))
-    print("Architecutre:")
-    print("{}: {}".format(0, self.layers[0]))
+    print("N Training instances: {}\nN attributes: {}\nBatch size: {} \nLearning rate: {}\nCost function:{}\nNormalization:{}"
+      .format(self.n_instances, self.n_attributes, self.batch_size, self.lr, self.cost, self.normalizeData))
+    print("\nArchitecutre:")
+    print("Layer {}: {} nodes".format(0, self.layers[0]))
     for i in range(1, len(self.layers)):
-      print("{}: {}  {}".format(i, self.layers[i], self.activations[i-1]))
+      print("Layer {}: {} nodes | {}".format(i, self.layers[i], self.activations[i-1]))
 
-  def training_epoch(self, n_iter=1):
+  def training_epoch(self, n_epochs=1):
     print("Training started")
     # Generate weights and biases
     for i in range(1, len(self.layers)):
@@ -51,11 +49,11 @@ class NeuralNetwork:
       self.W.append(w)
       self.B.append(b)
 
-    for _ in range(n_iter):
-      print("Iteration {}:".format(_))
+    for _ in range(n_epochs):
+      print("Epoch {}:".format(_))
       utils.shuffleTrainingData(self.X_train, self.Y_train)
       for i in range(0, self.n_instances, self.batch_size):
-        print("Epoch {}:".format(self.i_epoch), end=" ")
+        print("Batch {}:".format(self.i_epoch), end=" ")
         x_train = self.X_train[:, i:i+self.batch_size]
         y_train = self.Y_train[:, i:i+self.batch_size]
 
