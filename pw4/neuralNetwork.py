@@ -71,18 +71,14 @@ class NeuralNetwork:
           self.A[j+1] = self.activations[j].calc(self.Z[j])
 
         error= self.cost.calc(self.A[-1], y_train)
-        error_general = np.sum(error) / self.batch_size
+        error_general = np.sum(error)
         if verbose:
           print("Error : {}".format(error_general))
         self.costs.append(error_general)
 
         # Backwards propagation
         dA = self.cost.grad(self.A[-1], y_train)
-        print("Length of A is", len(self.A))
-        print("Length of W is", len(self.W))
         for j in range(len(self.W)) [::-1]:
-          print("J is " , j)
-          print("Magic works")
           dz = dA * self.activations[j].grad(self.Z[j])
           dw = np.dot(dz, self.A[j].T)
           db = np.sum(dz, axis=1, keepdims=True) / self.batch_size
