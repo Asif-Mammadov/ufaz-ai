@@ -21,7 +21,7 @@ class NeuralNetwork:
     self.Z = []
     self.layers = [X_train.shape[0], Y_train.shape[0]]
     self.costs = []
-    self.i_epoch = 0
+    self.i_iter = 0
     self.normalizeData=normalizeData
 
   def add_hidden_layer(self, n_nodes, activation):
@@ -46,8 +46,13 @@ class NeuralNetwork:
     for i in range(1, len(self.layers)):
       w = np.random.random((self.layers[i], self.layers[i-1])) * 0.01
       b = np.zeros((self.layers[i], 1))
+      z = np.zeros((self.layers[i], 1))
+      a = np.zeros((self.layers[i], 1))
       self.W.append(w)
       self.B.append(b)
+      self.Z.append(z)
+      self.A.append(a)
+    self.A.append(a)
 
     for _ in range(n_epochs):
       if verbose:
@@ -55,35 +60,48 @@ class NeuralNetwork:
       utils.shuffleTrainingData(self.X_train, self.Y_train)
       for i in range(0, self.n_instances, self.batch_size):
         if verbose:
-          print("Batch {}:".format(self.i_epoch), end=" ")
+          print("Batch {}:".format(self.i_iter), end=" ")
         x_train = self.X_train[:, i:i+self.batch_size]
         y_train = self.Y_train[:, i:i+self.batch_size]
 
         # Forward propagation
-        a = x_train
-        self.A.append(a)
+        self.A[0] = x_train 
         for j in range(len(self.W)):
-          z = np.dot(self.W[j], a) + self.B[j]
-          a = self.activations[j].calc(z)
-          self.Z.append(z)
-          self.A.append(a)
-        error= np.sum(self.cost.calc(a, y_train)) / self.batch_size
+          self.Z[j] = np.dot(self.W[j], self.A[j]) + self.B[j]
+          self.A[j+1] = self.activations[j].calc(self.Z[j])
+
+        error= self.cost.calc(self.A[-1], y_train)
+        error_general = np.sum(error) / self.batch_size
         if verbose:
-          print("Error : {}".format(error))
-        self.costs.append(error)
+          print("Error : {}".format(error_general))
+        self.costs.append(error_general)
 
         # Backwards propagation
-        dA = self.cost.grad(a, y_train)
-        for j in range(len(self.W))[::-1]:
-          dZ = dA * self.activations[j].grad(self.Z[j])
-          dw = np.dot(dZ, self.A[j].T)
-          db = np.sum(dZ, axis=1, keepdims=True) / self.batch_size
-          dA = np.dot(self.W[j].T, dZ)
-           
+        dA = self.cost.grad(self.A[-1], y_train)
+        print("Length of A is", len(self.A))
+        print("Length of W is", len(self.W))
+        for j in range(len(self.W)) [::-1]:
+          print("J is " , j)
+          print("Magic works")
+          dz = dA * self.activations[j].grad(self.Z[j])
+          dw = np.dot(dz, self.A[j].T)
+          db = np.sum(dz, axis=1, keepdims=True) / self.batch_size
+          dA = np.dot(self.W[j].T, dz)
+
           self.W[j] -= self.lr * dw
           self.B[j] -= self.lr * db
 
-        self.i_epoch += 1
+        # dA = self.cost.grad(a, y_train)
+        # for j in range(len(self.W))[::-1]:
+        #   dZ = dA * self.activations[j].grad(self.Z[j])
+        #   dw = np.dot(dZ, self.A[j].T)
+        #   db = np.sum(dZ, axis=1, keepdims=True) / self.batch_size
+        #   dA = np.dot(self.W[j].T, dZ)
+           
+        #   self.W[j] -= self.lr * dw
+        #   self.B[j] -= self.lr * db
+
+        self.i_iter += 1
   
   def predict(self, X):
     a = X.copy()
@@ -92,12 +110,14 @@ class NeuralNetwork:
     for j in range(len(self.W)):
       z = np.dot(self.W[j], a) + self.B[j]
       a = self.activations[j].calc(z)
-    
-    for i in range(a.shape[1]):
-      index = a[:, i].argmax()
-      a[:, i] = np.zeros(a.shape[0])
-      a[:, i][index] = 1
-    return a
+    if a.shape[0] == 1:
+      return a > 0.5
+    else:
+      for i in range(a.shape[1]):
+        index = a[:, i].argmax()
+        a[:, i] = np.zeros(a.shape[0])
+        a[:, i][index] = 1
+      return a
 
   def testPrediction(self, X_test, Y_test):
     t = f = 0
@@ -106,13 +126,14 @@ class NeuralNetwork:
       if (Yhat[:, i] == Y_test[:, i]).all():
         t += 1
       else:
+        print("Predicted: {}\nTest: {}".format(Yhat[:, i], Y_test[:, i]))
         f += 1
     print("Correct: {}\nFalse: {}\nAccuracy:{}".format(t, f, t / (t + f)))
     return t, f
 
   def plot_costs(self):
     import matplotlib.pyplot as plt
-    plt.plot(np.arange(self.i_epoch), self.costs)
+    plt.plot(np.arange(self.i_iter), self.costs)
     plt.xlabel("Iterations")
     plt.ylabel("Cost")
     plt.show()
