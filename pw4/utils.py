@@ -13,9 +13,6 @@ def split_train_test(X: np.ndarray, Y: np.ndarray, test_portion:float=0.2, seed:
   Returns:
       X_train, Y_train, X_test, Y_test (np.ndarray): Split values into training and testing.
   """
-  np.random.seed(seed) 
-  np.random.shuffle(X)
-  np.random.shuffle(Y)
   p = np.random.permutation(X.shape[1])
   X = X[:, p]
   Y = Y[:, p]

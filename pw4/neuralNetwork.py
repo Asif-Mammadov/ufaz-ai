@@ -40,7 +40,7 @@ class NeuralNetwork:
     for i in range(1, len(self.layers)):
       print("Layer {}: {} nodes | {}".format(i, self.layers[i], self.activations[i-1]))
 
-  def training_epoch(self, n_epochs=1):
+  def training_epoch(self, n_epochs=1, verbose=True):
     print("Training started")
     # Generate weights and biases
     for i in range(1, len(self.layers)):
@@ -50,10 +50,12 @@ class NeuralNetwork:
       self.B.append(b)
 
     for _ in range(n_epochs):
-      print("Epoch {}:".format(_))
+      if verbose:
+        print("Epoch {}:".format(_))
       utils.shuffleTrainingData(self.X_train, self.Y_train)
       for i in range(0, self.n_instances, self.batch_size):
-        print("Batch {}:".format(self.i_epoch), end=" ")
+        if verbose:
+          print("Batch {}:".format(self.i_epoch), end=" ")
         x_train = self.X_train[:, i:i+self.batch_size]
         y_train = self.Y_train[:, i:i+self.batch_size]
 
@@ -66,7 +68,8 @@ class NeuralNetwork:
           self.Z.append(z)
           self.A.append(a)
         error= np.sum(self.cost.calc(a, y_train)) / self.batch_size
-        print("Error : {}".format(error))
+        if verbose:
+          print("Error : {}".format(error))
         self.costs.append(error)
 
         # Backwards propagation
