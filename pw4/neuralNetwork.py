@@ -84,16 +84,20 @@ class NeuralNetwork:
     self.layers.insert(len(self.layers) - 1, n_nodes)
     self.activations.insert(len(self.activations)-1, activation)
   
-  def set_layer(self, index:int, n_nodes:int, activation):
+  def set_layer(self, index:int, n_nodes:int=None, activation=None):
     """Changes layer properties.
 
     Args:
         index (int): Index of the layer in neural network.
-        n_nodes (int): Number of nodes (perceptrons) to set for this layer.
-        activation (activation.Class): Activation function to be used. Refer to activation.py
+        n_nodes (int): Number of nodes (perceptrons) to set for this layer. Defaults to None.
+        activation (activation.Class): Activation function to be used. Refer to activation.py. Defaults to None.
+
+        If parameter is None, the value won't change.
     """    
-    self.layers[index] = n_nodes
-    self.activations[index] = activation
+    if n_nodes:
+      self.layers[index] = n_nodes
+    if activation:
+      self.activations[index] = activation
 
   def info(self):
     """Displays information about the neural network.
@@ -122,7 +126,8 @@ class NeuralNetwork:
   def train(self, n_epochs=1, verbose=True):
     self.generate_parameters()
     for _ in range(n_epochs):
-      print("-" * 20, "Epoch {}:".format(_), "-" * 20)
+      if verbose:
+        print("-" * 20, "Epoch {}:".format(_), "-" * 20)
       self.training_epoch(verbose=verbose)
       t, f = self.testPrediction(self.X_test, self.Y_test, verbose=verbose)
       self.accuracies.append(t / (t + f))
@@ -209,7 +214,8 @@ class NeuralNetwork:
         t += 1
       else:
         f += 1
-    print("Correct: {}\nFalse: {}\nAccuracy:{}".format(t, f, t / (t + f)))
+    if verbose:
+      print("Correct: {}\nFalse: {}\nAccuracy:{}".format(t, f, t / (t + f)))
     return (t, f)
 
   def plot_stats(self):
