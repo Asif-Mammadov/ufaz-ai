@@ -11,14 +11,13 @@ def main():
   X = utils.loadAttributes(df, ["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"])
   Y = utils.createOneHot(df, "Species")
 
-  X_train, Y_train, X_test, Y_test = utils.split_train_test(X, Y, test_portion=0.2)
+  X_train, Y_train, X_test, Y_test = utils.split_train_test(X, Y, test_portion=0.3)
 
-  nn = NeuralNetwork(X_train, Y_train, lr=0.1, batch_size=50, cost=MSE, normalizeData=False)
+  nn = NeuralNetwork(X_train, Y_train, X_test, Y_test, lr=0.1, cost=MSE, batch_size=20)
   nn.add_hidden_layer(5, Sigmoid)
   nn.info()
-  nn.training_epoch(n_epochs=400)
-  nn.testPrediction(X_test, Y_test)
-  nn.plot_costs()
+  nn.train(n_epochs=50, verbose=True)
+  nn.plot_stats()
 
 if __name__ == '__main__':
   main()
