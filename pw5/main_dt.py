@@ -11,7 +11,7 @@ def main():
   X = data.iloc[:, :-1].to_numpy().T
   Y = data.iloc[:, -1].to_numpy().T.reshape(1, -1)
   X_train, Y_train, X_test, Y_test = split_train_test(X, Y, test_portion=0.2)
-  dt = DecisionTree(X_train, Y_train, max_depth=4)
+  dt = DecisionTree(X_train, Y_train, max_depth=4, attr_names=data.columns[:-1])
   dt.fit()
   confusion_matrix, accuracy = dt.test_accuracy(X_test, Y_test)
 

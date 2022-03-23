@@ -2,12 +2,13 @@ import numpy as np
 from dt.node import Node
 
 class DecisionTree:
-  def __init__(self, X_train, Y_train, max_depth=4):
+  def __init__(self, X_train, Y_train, max_depth=4, attr_names=None):
     self.X_train = X_train
     self.Y_train = Y_train
     self.data = np.concatenate([self.X_train, self.Y_train], axis=0)
     self.max_depth = 4
     self.root_node = None
+    self.attr_names = list(attr_names)
 
   def separate_by_value(self, data, attr_index, value):
     less = np.where(data[attr_index] <= value)[0]
@@ -38,6 +39,7 @@ class DecisionTree:
 
         if (disc_p > best_disc_p):
           best["attr_index"] = attr_index
+          best["attr_name"] = self.attr_names[attr_index] if self.attr_names else None
           best["value"] = value
           best["left"] = left
           best["right"] = right
@@ -106,7 +108,7 @@ class DecisionTree:
     best = self.get_best_decision(data)
     node = Node(best["attr_index"], best["value"])
     # print("Best left:{}\nBest right{}".format(best["left"], best["right"]))
-    print("Separated on attribute index {} with value of {}".format(best["attr_index"], best["value"]))
+    print("Separated on attribute index {}(Called: {})  with value of {}".format(best["attr_index"], best["attr_name"], best["value"]))
     print("\nGoing to left node")
     node.set_left_child(self.fill_node(best["left"], i+1))
     print("\nGoing to right node")
