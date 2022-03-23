@@ -17,7 +17,7 @@ def main():
     # return
     X_train, Y_train, X_test, Y_test = utils.split_train_test(X, Y, test_portion=0.3)
 
-    nn = NeuralNetwork(X_train, Y_train, X_test, Y_test, lr=0.01, cost=MSE, batch_size=4, normalizeData=True)
+    nn = NeuralNetwork(X_train, Y_train, X_test, Y_test, lr=0.01, cost=CrossEntropy, batch_size=4, normalizeData=True)
     nn.add_hidden_layer(5, Relu)
     nn.info()
     nn.train(n_epochs=100, verbose=True)
