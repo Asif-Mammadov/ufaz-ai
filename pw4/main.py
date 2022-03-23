@@ -12,11 +12,10 @@ def main():
   Y = utils.createOneHot(df, "Species")
 
   X_train, Y_train, X_test, Y_test = utils.split_train_test(X, Y, test_portion=0.3)
-
-  nn = NeuralNetwork(X_train, Y_train, X_test, Y_test, lr=0.1, cost=MSE, batch_size=20)
-  nn.add_hidden_layer(5, Sigmoid)
+  nn = NeuralNetwork(X_train, Y_train, X_test, Y_test, lr=0.1, cost=MSE, batch_size=10)
+  nn.add_hidden_layer(5, Relu)
   nn.info()
-  nn.train(n_epochs=50, verbose=True)
+  nn.train(n_epochs=100, verbose=True)
   nn.plot_stats()
 
 if __name__ == '__main__':

@@ -123,17 +123,41 @@ class NeuralNetwork:
       self.A.append(a)
     self.A.append(a)
 
-  def train(self, n_epochs=1, verbose=True):
+  def train(self, n_epochs=None, verbose=True):
+    infFlag = False
+    if not n_epochs:
+      infFlag = True
+      # Dynamic change
+      n_epochs = 100
     self.generate_parameters()
-    for _ in range(n_epochs):
+    pos_slope = 0
+    i = 0
+    error_i = 0
+    errors = None
+    while i < n_epochs:
       if verbose:
-        print("-" * 20, "Epoch {}:".format(_), "-" * 20)
+        print("-" * 20, "Epoch {}:".format(i), "-" * 20)
       self.training_epoch(verbose=verbose)
       t, f = self.testPrediction(self.X_test, self.Y_test, verbose=verbose)
       self.accuracies.append(t / (t + f))
       self.lr /= self.lr_reduce
-    
+      if infFlag:
+        n_epochs += 1
+        new_error_i = len(self.costs)
+        if errors:
+          if self.avg(self.costs[error_i:new_error_i]) - errors > 0:
+            pos_slope +=1
+            break
+          else:
+            pos_slope = 0
+        if pos_slope >= 10:
+          break
+        errors = self.avg(self.costs[error_i:new_error_i])
+        error_i = new_error_i
+      i += 1
 
+  def avg(self, l):
+    return sum(l) / len(l)
   def training_epoch(self, verbose:bool=True):
     """Trains the network.
 

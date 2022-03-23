@@ -3,9 +3,6 @@ import pandas as pd
 from dt.utils import split_train_test
 from dt.decision_tree import DecisionTree
 
-
-
-
 def main():
   data = pd.read_csv("heart.csv")
   X = data.iloc[:, :-1].to_numpy().T
