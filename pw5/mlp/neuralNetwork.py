@@ -138,8 +138,10 @@ class NeuralNetwork:
       if verbose:
         print("-" * 20, "Epoch {}:".format(i), "-" * 20)
       self.training_epoch(verbose=verbose)
-      t, f = self.testPrediction(self.X_test, self.Y_test, verbose=verbose)
-      self.accuracies.append(t / (t + f))
+      conf_matrix = self.testPrediction(self.X_test, self.Y_test, verbose=verbose)
+      self.accuracies.append((conf_matrix[0][0] + conf_matrix[1][1]) / sum(map(sum, conf_matrix)))
+      if verbose:
+        print("Accuracy: {}".format(self.accuracies[-1]))
       self.lr /= self.lr_reduce
       if infFlag:
         n_epochs += 1
@@ -207,7 +209,10 @@ class NeuralNetwork:
     """
     a = X.copy()
     if self.normalizeData:
-      a /= a.max(axis=1)[:, np.newaxis]
+      with np.errstate(divide='ignore', invalid='ignore'):
+        a = np.true_divide(a, a.max(axis=1).reshape(-1, 1))
+        a[a == np.inf] = 0
+        a = np.nan_to_num(a)
     for j in range(len(self.W)):
       z = np.dot(self.W[j], a) + self.B[j]
       a = self.activations[j].calc(z)
@@ -232,17 +237,23 @@ class NeuralNetwork:
     Returns:
         tuple: (true, false) predictions
     """    
-    t = f = 0
+    tp = fp = tn = fn = 0
     Yhat = self.predict(X_test)
     for i in range(Yhat.shape[1]):
-      if (Yhat[:, i] == Y_test[:, i]).all():
-        t += 1
+      if (Y_test[:, i] == 0).all():
+        if (Yhat[:, i] == Y_test[:, i]).all():
+          tn += 1
+        else:
+          # print("Predict: {}\nTarget: {}".format(Yhat, Y_test))
+          fn += 1
       else:
-        # print("Predict: {}\nTarget: {}".format(Yhat, Y_test))
-        f += 1
+        if (Yhat[:, i] == Y_test[:, i]).all():
+          tp += 1
+        else:
+          fp += 1
     if verbose:
-      print("Correct: {}\nFalse: {}\nAccuracy:{}".format(t, f, t / (t + f)))
-    return (t, f)
+      print("TN:{} FN:{} FP:{} TP{}".format(tn, fn, fp, tp))
+    return np.array([[tn, fn], [fp, tp]])
 
   def plot_stats(self):
     """Plots the error and accuracy of a model on a given data.

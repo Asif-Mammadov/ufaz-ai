@@ -72,9 +72,9 @@ class DecisionTree:
         else:
           fn += 1
     accuracy = (tp + tn) / (tp + tn + fp + fn)
-    print("True Positive: {}\nFalse Positive: {}\nFalse Negative: {}\nTrue Negative: {}".format(tp, fp, fn, tn))
+    print("TN:{} FN:{} FP:{} TP{}".format(tn, fn, fp, tp))
     print("Accuracy: {}".format(accuracy))
-    return [[tp, fp], [fn, tn]], accuracy
+    return np.array([[tn, fn], [fp, tp]])
 
   def predict(self, X_test):
     a = []

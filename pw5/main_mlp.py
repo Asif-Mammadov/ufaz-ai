@@ -4,6 +4,7 @@ from mlp.activation import Sigmoid, Relu
 from mlp import utils
 import pandas as pd
 import numpy as np
+import metrics
 
 
 
@@ -21,7 +22,14 @@ def main():
     nn.add_hidden_layer(5, Relu)
     nn.info()
     nn.train(verbose=True)
-    nn.plot_stats()
+    conf_matrix = nn.testPrediction(X_test, Y_test)
+    print("Precision:", metrics.get_precision(conf_matrix))
+    print("Accuracy:", metrics.get_accuracy(conf_matrix))
+    print("Sensitivity:", metrics.get_sensitivity(conf_matrix))
+    print("Specificity:", metrics.get_specificity(conf_matrix))
+    # print(X_test[:, 1].reshape(-1, 1).shape)
+    # print(nn.predict(X_test[:, 1].reshape(-1, 1)))
+    # nn.plot_stats()
 
 if __name__ == "__main__":
     main()
