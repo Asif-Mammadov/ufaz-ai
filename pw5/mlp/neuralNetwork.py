@@ -71,6 +71,7 @@ class NeuralNetwork:
     self.Z = []
     self.layers = [X_train.shape[0], Y_train.shape[0]]
     self.costs = []
+    self.avg_costs = []
     self.accuracies = []
     self.i_iter = 0
 
@@ -156,6 +157,7 @@ class NeuralNetwork:
         if pos_slope >= 10:
           break
         errors = self.avg(self.costs[error_i:new_error_i])
+        self.avg_costs.append([new_error_i, errors])
         error_i = new_error_i
       i += 1
 
@@ -252,17 +254,20 @@ class NeuralNetwork:
         else:
           fp += 1
     if verbose:
-      print("TN:{} FN:{} FP:{} TP{}".format(tn, fn, fp, tp))
+      print("Test prediciton : TN:{} FN:{} FP:{} TP{}".format(tn, fn, fp, tp))
     return np.array([[tn, fn], [fp, tp]])
 
   def plot_stats(self):
     """Plots the error and accuracy of a model on a given data.
     """
+    avg_costs = np.array(self.avg_costs)
     fig, axs = plt.subplots(2)
-    axs[0].plot(self.costs, c='r')
+    axs[0].plot(self.costs, c='r', label="error")
+    axs[0].plot(avg_costs.T[0], avg_costs.T[1], c='black', label="average error")
     axs[0].set_xlabel("Iterations")
     axs[0].set_ylabel("Error")
     axs[0].grid(True)
+    axs[0].legend()
 
     axs[1].plot(self.accuracies, marker='.', c='b')
     axs[1].set_xlabel("Epochs")

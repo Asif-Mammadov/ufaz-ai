@@ -13,19 +13,19 @@ def main():
     attr = data.columns[:-1]
     X = utils.loadAttributes(data, attr)
     Y = data['target'].to_numpy().reshape((1, -1))
-
-    tmp = np.concatenate([X, Y], axis=0)
     X_train, Y_train, X_test, Y_test = utils.split_train_test(X, Y, test_portion=0.3)
 
     nn = NeuralNetwork(X_train, Y_train, X_test, Y_test, lr=0.01, cost=MSE, batch_size=4, normalization=custom)
     nn.add_hidden_layer(5, Tanh)
     nn.info()
-    nn.train(verbose=True)
-    conf_matrix = nn.testPrediction(X_test, Y_test)
+    nn.train(verbose=False)
+    print("-"*20, "Results", "-"*20)
+    conf_matrix = nn.testPrediction(X_test, Y_test, verbose=True)
     print("Precision:", metrics.get_precision(conf_matrix))
     print("Accuracy:", metrics.get_accuracy(conf_matrix))
     print("Sensitivity:", metrics.get_sensitivity(conf_matrix))
     print("Specificity:", metrics.get_specificity(conf_matrix))
+    nn.plot_stats()
 
 if __name__ == "__main__":
     main()
