@@ -5,7 +5,8 @@ from mlp import utils
 import pandas as pd
 import numpy as np
 import metrics
-from mlp.normalization import z_score, linear_scaling, custom
+from mlp.normalization import z_score, linear_scaling, linear_scaling_max
+
 
 
 def main():
@@ -15,7 +16,7 @@ def main():
     Y = data['target'].to_numpy().reshape((1, -1))
     X_train, Y_train, X_test, Y_test = utils.split_train_test(X, Y, test_portion=0.3)
 
-    nn = NeuralNetwork(X_train, Y_train, X_test, Y_test, lr=0.01, cost=MSE, batch_size=4, normalization=custom)
+    nn = NeuralNetwork(X_train, Y_train, X_test, Y_test, lr=0.01, cost=MSE, batch_size=4, normalization=linear_scaling_max)
     nn.add_hidden_layer(5, Tanh)
     nn.info()
     nn.train(verbose=False)
