@@ -42,6 +42,31 @@ class Relu:
     """
     return Z > 0
 
+class Tanh:
+  """ Hyperbolic tangent (tanh) activation function.
+  """
+  def calc(z):
+    """Calculates the activation of Z.
+
+    Args:
+        Z (np.ndarray): A matrix.
+
+    Returns:
+        np.ndarray: New matrix after activation function.
+    """
+    return np.tanh(z)
+
+  def grad(z):
+    """Finds the gradient.
+
+    Args:
+        Z (np.ndarray): A matrix.
+
+    Returns:
+        np.ndarray: New matrix after the gradient of activation function.
+    """
+    return 1 - np.tanh(z) ** 2
+
 class Softmax:
   """Softmax activation function.
   """
