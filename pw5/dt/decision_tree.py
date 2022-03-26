@@ -55,7 +55,7 @@ class DecisionTree:
   def fit(self):
     self.root_node = self.fill_node(self.data, 0)
 
-  def test_accuracy(self, X_test, Y_test):
+  def test_accuracy(self, X_test, Y_test, verbose=True):
     tp = tn = fp = fn = 0
     Yhat = self.predict(X_test)
     Y_test = Y_test.flatten()
@@ -72,8 +72,8 @@ class DecisionTree:
         else:
           fn += 1
     accuracy = (tp + tn) / (tp + tn + fp + fn)
-    print("TN:{} FN:{} FP:{} TP{}".format(tn, fn, fp, tp))
-    print("Accuracy: {}".format(accuracy))
+    if verbose:
+      print("TN:{} FN:{} FP:{} TP{}".format(tn, fn, fp, tp))
     return np.array([[tn, fn], [fp, tp]])
 
   def predict(self, X_test):

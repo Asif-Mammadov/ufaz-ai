@@ -254,7 +254,7 @@ class NeuralNetwork:
         else:
           fp += 1
     if verbose:
-      print("Test prediciton : TN:{} FN:{} FP:{} TP{}".format(tn, fn, fp, tp))
+      print("Test prediciton : TN:{} FN:{} FP:{} TP:{}".format(tn, fn, fp, tp))
     return np.array([[tn, fn], [fp, tp]])
 
   def plot_stats(self):
