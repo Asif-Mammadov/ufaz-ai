@@ -1,7 +1,7 @@
 import numpy as np
 from mlp.activation import Sigmoid, Softmax, Relu
 from mlp.cost import MSE
-from mlp import utils
+from mlp import utils, normalization
 import matplotlib.pyplot as plt
 
 class NeuralNetwork:
@@ -35,7 +35,7 @@ class NeuralNetwork:
     Methods
     -------
   """  
-  def __init__(self, X_train:np.ndarray, Y_train:np.ndarray, X_test:np.ndarray, Y_test:np.ndarray, lr:float, lr_reduce:float=1, cost=MSE, batch_size:int=None, normalizeData:bool=False):
+  def __init__(self, X_train:np.ndarray, Y_train:np.ndarray, X_test:np.ndarray, Y_test:np.ndarray, lr:float, lr_reduce:float=1, cost=MSE, batch_size:int=None, normalization=None):
     """
 
     Args:
@@ -47,15 +47,17 @@ class NeuralNetwork:
         lr_reduce (float): Decrease rate of learning rate after each epoch. lr /= lr_reduce
         cost (_type_, optional): Cost function used. Defaults to MSE. Refer to cost.py
         batch_size (int, optional): Batch size for training. Defaults to None. If None, batch size equals to n_instances.
-        normalizeData (bool, optional): Defines whether to normalize the data for dataset. Defaults to False.
+        normalization (_type_, optional): Defines the normalization function. Defaults to None.
     """
     self.X_train = X_train.astype('float')
     self.Y_train = Y_train.astype('float')
+    self.normalization = normalization
+    if callable(self.normalization):
+      self.X_train = self.normalization(self.X_train)
+      self.Y_train = self.normalization(self.Y_train)
+      print("Y_train", Y_train)
     self.X_test = X_test.astype('float')
     self.Y_test = Y_test.astype('float')
-    if normalizeData:
-      self.X_train /= self.X_train.max(axis=1)[:, np.newaxis]
-      self.Y_train /= self.Y_train.max(axis=1)[:, np.newaxis]
     self.n_instances = self.X_train.shape[1]
     self.n_attributes = self.X_train.shape[0]
     self.batch_size = batch_size if batch_size else self.n_instances
@@ -71,7 +73,6 @@ class NeuralNetwork:
     self.costs = []
     self.accuracies = []
     self.i_iter = 0
-    self.normalizeData=normalizeData
 
   def add_hidden_layer(self, n_nodes:int, activation):
     """Appends a layer to the network architecture.
@@ -103,7 +104,7 @@ class NeuralNetwork:
     """Displays information about the neural network.
     """
     print("N Training instances: {}\nN attributes: {}\nBatch size: {} \nLearning rate: {}\nCost function:{}\nNormalization:{}"
-      .format(self.n_instances, self.n_attributes, self.batch_size, self.lr, self.cost, self.normalizeData))
+      .format(self.n_instances, self.n_attributes, self.batch_size, self.lr, self.cost, self.normalization))
     print("\nArchitecutre:")
     print("Layer {}: {} nodes".format(0, self.layers[0]))
     for i in range(1, len(self.layers)):
@@ -160,6 +161,7 @@ class NeuralNetwork:
 
   def avg(self, l):
     return sum(l) / len(l)
+
   def training_epoch(self, verbose:bool=True):
     """Trains the network.
 
@@ -201,6 +203,7 @@ class NeuralNetwork:
   def predict(self, X:np.ndarray)->np.ndarray:
     """Predicts the Y (output) value given the X (input).
 
+
     Args:
         X (np.ndarray): Input data.
 
@@ -208,11 +211,8 @@ class NeuralNetwork:
         Y (np.ndarray): Output (label) value.
     """
     a = X.copy()
-    if self.normalizeData:
-      with np.errstate(divide='ignore', invalid='ignore'):
-        a = np.true_divide(a, a.max(axis=1).reshape(-1, 1))
-        a[a == np.inf] = 0
-        a = np.nan_to_num(a)
+    if callable(self.normalization):
+        a = self.normalization(a)
     for j in range(len(self.W)):
       z = np.dot(self.W[j], a) + self.B[j]
       a = self.activations[j].calc(z)
