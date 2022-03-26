@@ -1,5 +1,5 @@
 import numpy as np
-def custom(X: np.ndarray)->np.ndarray:
+def linear_scaling_max(X: np.ndarray)->np.ndarray:
   """
   X' = X / X_max
 

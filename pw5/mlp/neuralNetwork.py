@@ -55,7 +55,6 @@ class NeuralNetwork:
     if callable(self.normalization):
       self.X_train = self.normalization(self.X_train)
       self.Y_train = self.normalization(self.Y_train)
-      print("Y_train", Y_train)
     self.X_test = X_test.astype('float')
     self.Y_test = Y_test.astype('float')
     self.n_instances = self.X_train.shape[1]
