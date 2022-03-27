@@ -32,9 +32,7 @@ class NeuralNetwork:
     normalizeData : bool. Defaults to Fasle.
       Defines whether to normalize the data for dataset.
 
-    Methods
-    -------
-  """  
+  """
   def __init__(self, X_train:np.ndarray, Y_train:np.ndarray, lr:float, lr_reduce:float=1, cost=MSE, batch_size:int=None, normalization=None):
     """
 
@@ -121,6 +119,9 @@ class NeuralNetwork:
     self.A.append(a)
 
   def train(self, n_epochs=None, verbose=True):
+    print("Training has started. Verbose mode is {}.".format(verbose))
+    if not n_epochs:
+      print("Number of epochs is not set. The model will decide itself when to stop. Be patient. It may take a little time.")
     infFlag = False
     min_error = np.inf
     if not n_epochs:

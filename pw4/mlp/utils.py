@@ -75,5 +75,13 @@ def shuffleTrainingData(X_train: np.ndarray, Y_train: np.ndarray, seed:int=None)
     X_train[:, [i, j]] = X_train[:, [j, i]]
     Y_train[:, [i, j]] = Y_train[:, [j, i]]
 
-def get_accuracy(conf_matrix):
+def get_accuracy(conf_matrix:np.ndarray)->float:
+  """
+  Finds accuracy from confusion matrix
+  Args:
+    conf_matrix (np.ndarray): Confusion matrix.
+
+  Returns (float): Accuracy.
+
+  """
   return np.trace(conf_matrix) / conf_matrix.sum()

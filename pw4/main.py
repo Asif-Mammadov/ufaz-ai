@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from mlp import utils
 from mlp.neuralNetwork import NeuralNetwork
-from mlp.activation import Sigmoid, Relu, Softmax
+from mlp.activation import Sigmoid, Relu, Tanh
 from mlp.cost import MSE, CrossEntropy
 from mlp.normalization import linear_scaling_max, linear_scaling
 from mlp.utils import get_accuracy
@@ -17,7 +17,7 @@ def main():
   nn = NeuralNetwork(X_train, Y_train, lr=0.05, cost=MSE, batch_size=4, normalization=None)
   nn.add_hidden_layer(5, Relu)
   nn.info()
-  nn.train(n_epochs=50,verbose=True)
+  nn.train(n_epochs=None,verbose=True)
   print("-" * 20, "Recap", "-" * 20)
   nn.info()
   conf_matrix = nn.testPrediction(X_test, Y_test, verbose=False)

@@ -19,7 +19,7 @@ def main():
     nn = NeuralNetwork(X_train, Y_train, lr=0.01, cost=MSE, batch_size=4, normalization=linear_scaling_max)
     nn.add_hidden_layer(5, Relu)
     nn.info()
-    nn.train(verbose=True)
+    nn.train(verbose=False)
     print("-"*20, "Results", "-"*20)
     conf_matrix = nn.testPrediction(X_test, Y_test, verbose=True)
     print("Precision:", metrics.get_precision(conf_matrix))
