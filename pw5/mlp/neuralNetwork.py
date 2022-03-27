@@ -277,4 +277,5 @@ class NeuralNetwork:
     axs[1].set_xlabel("Epochs")
     axs[1].set_ylabel("Accuracy")
     axs[1].grid(True)
+    axs[1].set_ylim([0, 1])
     plt.show()

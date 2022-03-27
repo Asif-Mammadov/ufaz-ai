@@ -146,8 +146,6 @@ class NeuralNetwork:
       conf_matrix = self.testPrediction(self.X_test, self.Y_test, verbose=verbose)
       accuracy = get_accuracy(conf_matrix)
       self.accuracies.append(accuracy)
-      if verbose:
-        print("Accuracy: {}".format(self.accuracies[-1]))
       self.lr /= self.lr_reduce
       if infFlag:
         n_epochs += 1
@@ -246,19 +244,8 @@ class NeuralNetwork:
     conf_matrix = np.zeros((Y_test.shape[0], Y_test.shape[0]))
     for i in range(Yhat.shape[1]):
       conf_matrix[Y_test[:, i].argmax(), Yhat[:, i].argmax()] += 1
-      # if (Y_test[:, i] == 0).all():
-      #   if (Yhat[:, i] == Y_test[:, i]).all():
-      #     tn += 1
-      #   else:
-      #     # print("Predict: {}\nTarget: {}".format(Yhat, Y_test))
-      #     fn += 1
-      # else:
-      #   if (Yhat[:, i] == Y_test[:, i]).all():
-      #     tp += 1
-      #   else:
-      #     fp += 1
     if verbose:
-      print("Accuracy : {}, {}".format(get_accuracy(conf_matrix), conf_matrix))
+      print("Accuracy : {}".format(get_accuracy(conf_matrix)))
     return conf_matrix
 
   def avg(self, l):
@@ -283,4 +270,5 @@ class NeuralNetwork:
     axs[1].set_xlabel("Epochs")
     axs[1].set_ylabel("Accuracy")
     axs[1].grid(True)
+    axs[1].set_ylim([0, 1])
     plt.show()
