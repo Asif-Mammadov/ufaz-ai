@@ -25,7 +25,7 @@ class NeuralNetwork:
         Learning rate.
     lr_reduce : float
         Decrease rate of learning rate after each epoch.
-    cost : <<cost.Class>>. Defaults to MSE. Refer to cost.py
+    cost : <<cost.Class>>. Defaults to MSE. Refer to .cost.py
       Cost function used.
     batch_size : int. Defaults to None.
         Batch size for training. If None, batch size equals to n_instances.
@@ -35,17 +35,15 @@ class NeuralNetwork:
     Methods
     -------
   """  
-  def __init__(self, X_train:np.ndarray, Y_train:np.ndarray, X_test:np.ndarray, Y_test:np.ndarray, lr:float, lr_reduce:float=1, cost=MSE, batch_size:int=None, normalization=None):
+  def __init__(self, X_train:np.ndarray, Y_train:np.ndarray, lr:float, lr_reduce:float=1, cost=MSE, batch_size:int=None, normalization=None):
     """
 
     Args:
         X_train (np.ndarray): Input data for training.
         Y_train (np.ndarray): Labels of training data (output).
-        X_test (np.ndarray): Input data for test.
-        Y_test (np.ndarray): Labels of test data.
         lr (float): Learning rate.
         lr_reduce (float): Decrease rate of learning rate after each epoch. lr /= lr_reduce
-        cost (_type_, optional): Cost function used. Defaults to MSE. Refer to cost.py
+        cost (_type_, optional): Cost function used. Defaults to MSE. Refer to .cost.py
         batch_size (int, optional): Batch size for training. Defaults to None. If None, batch size equals to n_instances.
         normalization (_type_, optional): Defines the normalization function. Defaults to None.
     """
@@ -55,8 +53,6 @@ class NeuralNetwork:
     if callable(self.normalization):
       self.X_train = self.normalization(self.X_train)
       self.Y_train = self.normalization(self.Y_train)
-    self.X_test = X_test.astype('float')
-    self.Y_test = Y_test.astype('float')
     self.n_instances = self.X_train.shape[1]
     self.n_attributes = self.X_train.shape[0]
     self.batch_size = batch_size if batch_size else self.n_instances
@@ -80,7 +76,7 @@ class NeuralNetwork:
       The layer is put just before the output layer.
     Args:
         n_nodes (int): Number of nodes(perceptrons) for this layer.
-        activation (activation.Class): Activation function to be used. Refer to activation.py
+        activation (activation.Class): Activation function to be used. Refer to .activation.py
     """
     self.layers.insert(len(self.layers) - 1, n_nodes)
     self.activations.insert(len(self.activations)-1, activation)
@@ -91,7 +87,7 @@ class NeuralNetwork:
     Args:
         index (int): Index of the layer in neural network.
         n_nodes (int): Number of nodes (perceptrons) to set for this layer. Defaults to None.
-        activation (activation.Class): Activation function to be used. Refer to activation.py. Defaults to None.
+        activation (activation.Class): Activation function to be used. Refer to .activation.py. Defaults to None.
 
         If parameter is None, the value won't change.
     """    
@@ -126,6 +122,7 @@ class NeuralNetwork:
 
   def train(self, n_epochs=None, verbose=True):
     infFlag = False
+    min_error = np.inf
     if not n_epochs:
       infFlag = True
       # Dynamic change
@@ -139,7 +136,7 @@ class NeuralNetwork:
       if verbose:
         print("-" * 20, "Epoch {}:".format(i), "-" * 20)
       self.training_epoch(verbose=verbose)
-      conf_matrix = self.testPrediction(self.X_test, self.Y_test, verbose=verbose)
+      conf_matrix = self.testPrediction(self.X_train, self.Y_train, verbose=verbose)
       self.accuracies.append((conf_matrix[0][0] + conf_matrix[1][1]) / sum(map(sum, conf_matrix)))
       if verbose:
         print("Accuracy: {}".format(self.accuracies[-1]))
@@ -148,10 +145,11 @@ class NeuralNetwork:
         n_epochs += 1
         new_error_i = len(self.costs)
         if errors:
-          if self.avg(self.costs[error_i:new_error_i]) - errors > 0:
-            pos_slope +=1
-            break
+          new_avr_error = self.avg(self.costs[error_i:new_error_i])
+          if new_avr_error > min_error:
+            pos_slope += 1
           else:
+            min_error = new_avr_error
             pos_slope = 0
         if pos_slope >= 10:
           break
