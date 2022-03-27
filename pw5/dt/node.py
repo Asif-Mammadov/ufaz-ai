@@ -1,12 +1,24 @@
 class Node:
-  def __init__(self, attr_index=None, value=None):
+  def __init__(self, attr_index:int=None, value=None):
+    """
+
+    Args:
+      attr_index (int): Index of an attribute in a dataset.
+      value (float): Threshold value of a node.
+    """
     self.attr_index = attr_index
     self.value = value
     self.left_child = None
     self.right_child = None
+    # Output value (prediction) of a node. Available only if the node is leaf node.
     self.output = None
 
   def isLeaf(self):
+    """
+
+    Returns: True if node is leaf node, False otherwise.
+
+    """
     if self.get_left_child() is None and self.get_right_child() is None:
       return True
     return False

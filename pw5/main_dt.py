@@ -12,7 +12,7 @@ def main():
   dt = DecisionTree(X_train, Y_train, max_depth=4, attr_names=data.columns[:-1])
   dt.fit()
   print("-" * 20, "Results", "-" * 20)
-  conf_matrix = dt.test_accuracy(X_test, Y_test, verbose=True)
+  conf_matrix = dt.test(X_test, Y_test, verbose=True)
   print("Precision:", metrics.get_precision(conf_matrix))
   print("Accuracy:", metrics.get_accuracy(conf_matrix))
   print("Sensitivity:", metrics.get_sensitivity(conf_matrix))

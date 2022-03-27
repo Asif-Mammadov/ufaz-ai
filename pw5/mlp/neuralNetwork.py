@@ -160,8 +160,6 @@ class NeuralNetwork:
         error_i = new_error_i
       i += 1
 
-  def avg(self, l):
-    return sum(l) / len(l)
 
   def training_epoch(self, verbose:bool=True):
     """Trains the network.
@@ -255,6 +253,11 @@ class NeuralNetwork:
     if verbose:
       print("Test prediciton : TN:{} FN:{} FP:{} TP:{}".format(tn, fn, fp, tp))
     return np.array([[tn, fn], [fp, tp]])
+
+  def avg(self, l):
+    """Finds average of an array l
+    """
+    return sum(l) / len(l)
 
   def plot_stats(self):
     """Plots the error and accuracy of a model on a given data.
