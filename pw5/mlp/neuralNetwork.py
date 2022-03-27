@@ -35,14 +35,12 @@ class NeuralNetwork:
     Methods
     -------
   """  
-  def __init__(self, X_train:np.ndarray, Y_train:np.ndarray, X_test:np.ndarray, Y_test:np.ndarray, lr:float, lr_reduce:float=1, cost=MSE, batch_size:int=None, normalization=None):
+  def __init__(self, X_train:np.ndarray, Y_train:np.ndarray, lr:float, lr_reduce:float=1, cost=MSE, batch_size:int=None, normalization=None):
     """
 
     Args:
         X_train (np.ndarray): Input data for training.
         Y_train (np.ndarray): Labels of training data (output).
-        X_test (np.ndarray): Input data for test.
-        Y_test (np.ndarray): Labels of test data.
         lr (float): Learning rate.
         lr_reduce (float): Decrease rate of learning rate after each epoch. lr /= lr_reduce
         cost (_type_, optional): Cost function used. Defaults to MSE. Refer to .cost.py
@@ -55,8 +53,6 @@ class NeuralNetwork:
     if callable(self.normalization):
       self.X_train = self.normalization(self.X_train)
       self.Y_train = self.normalization(self.Y_train)
-    self.X_test = X_test.astype('float')
-    self.Y_test = Y_test.astype('float')
     self.n_instances = self.X_train.shape[1]
     self.n_attributes = self.X_train.shape[0]
     self.batch_size = batch_size if batch_size else self.n_instances
@@ -140,7 +136,7 @@ class NeuralNetwork:
       if verbose:
         print("-" * 20, "Epoch {}:".format(i), "-" * 20)
       self.training_epoch(verbose=verbose)
-      conf_matrix = self.testPrediction(self.X_test, self.Y_test, verbose=verbose)
+      conf_matrix = self.testPrediction(self.X_train, self.Y_train, verbose=verbose)
       self.accuracies.append((conf_matrix[0][0] + conf_matrix[1][1]) / sum(map(sum, conf_matrix)))
       if verbose:
         print("Accuracy: {}".format(self.accuracies[-1]))
@@ -277,5 +273,4 @@ class NeuralNetwork:
     axs[1].set_xlabel("Epochs")
     axs[1].set_ylabel("Accuracy")
     axs[1].grid(True)
-    axs[1].set_ylim([0, 1])
     plt.show()
