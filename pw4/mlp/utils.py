@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from activation import Relu, Sigmoid, Softmax
+from mlp.activation import Relu, Sigmoid, Softmax
 def split_train_test(X: np.ndarray, Y: np.ndarray, test_portion:float=0.2, seed:int=None)->np.ndarray:
   """Splits the data into training and testing sets.
 
@@ -44,7 +44,7 @@ def createOneHot(dataset: pd.DataFrame, column: str) -> np.ndarray:
     oneHot[i] = np.array([Y == unique[i]])
   return oneHot
 
-def loadAttributes(dataset: pd.DataFrame, attributes: list) -> np.array:
+def loadAttributes(dataset: pd.DataFrame, attributes: list=None) -> np.array:
   """Loads attribute values in a matrix. Represents an input of neural network.
 
   Args:
@@ -73,6 +73,3 @@ def shuffleTrainingData(X_train: np.ndarray, Y_train: np.ndarray, seed:int=None)
     j = np.random.randint(0, i)
     X_train[:, [i, j]] = X_train[:, [j, i]]
     Y_train[:, [i, j]] = Y_train[:, [j, i]]
-
-def get_accuracy(conf_matrix):
-  return np.trace(conf_matrix) / conf_matrix.sum()

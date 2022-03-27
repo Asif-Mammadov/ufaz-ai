@@ -4,6 +4,9 @@ from mlp.cost import MSE
 from mlp import utils, normalization
 import matplotlib.pyplot as plt
 
+from pw4.utils import get_accuracy
+
+
 class NeuralNetwork:
   """Class for designing, training and testing custom Neural Network.
 
@@ -141,7 +144,8 @@ class NeuralNetwork:
         print("-" * 20, "Epoch {}:".format(i), "-" * 20)
       self.training_epoch(verbose=verbose)
       conf_matrix = self.testPrediction(self.X_test, self.Y_test, verbose=verbose)
-      self.accuracies.append((conf_matrix[0][0] + conf_matrix[1][1]) / sum(map(sum, conf_matrix)))
+      accuracy = get_accuracy(conf_matrix)
+      self.accuracies.append(accuracy)
       if verbose:
         print("Accuracy: {}".format(self.accuracies[-1]))
       self.lr /= self.lr_reduce
@@ -155,11 +159,6 @@ class NeuralNetwork:
           else:
             min_error = new_avr_error
             pos_slope = 0
-          # if new_avr_error - errors > 0:
-          #   pos_slope +=1
-          #   # break
-          # else:
-          #   pos_slope = 0
         if pos_slope >= 10:
           break
         errors = self.avg(self.costs[error_i:new_error_i])
@@ -245,21 +244,24 @@ class NeuralNetwork:
     """    
     tp = fp = tn = fn = 0
     Yhat = self.predict(X_test)
+    print("Y_test: {}\nYhat: {}".format(Y_test.T, Yhat.T))
+    conf_matrix = np.zeros((Y_test.shape[0], Y_test.shape[0]))
     for i in range(Yhat.shape[1]):
-      if (Y_test[:, i] == 0).all():
-        if (Yhat[:, i] == Y_test[:, i]).all():
-          tn += 1
-        else:
-          # print("Predict: {}\nTarget: {}".format(Yhat, Y_test))
-          fn += 1
-      else:
-        if (Yhat[:, i] == Y_test[:, i]).all():
-          tp += 1
-        else:
-          fp += 1
+      conf_matrix[Y_test[:, i].argmax(), Yhat[:, i].argmax()] += 1
+      # if (Y_test[:, i] == 0).all():
+      #   if (Yhat[:, i] == Y_test[:, i]).all():
+      #     tn += 1
+      #   else:
+      #     # print("Predict: {}\nTarget: {}".format(Yhat, Y_test))
+      #     fn += 1
+      # else:
+      #   if (Yhat[:, i] == Y_test[:, i]).all():
+      #     tp += 1
+      #   else:
+      #     fp += 1
     if verbose:
-      print("Test prediciton : TN:{} FN:{} FP:{} TP:{}".format(tn, fn, fp, tp))
-    return np.array([[tn, fn], [fp, tp]])
+      print("Accuracy : {}, {}".format(get_accuracy(conf_matrix), conf_matrix))
+    return conf_matrix
 
   def avg(self, l):
     """Finds average of an array l
@@ -272,7 +274,8 @@ class NeuralNetwork:
     avg_costs = np.array(self.avg_costs)
     fig, axs = plt.subplots(2)
     axs[0].plot(self.costs, c='r', label="error")
-    axs[0].plot(avg_costs.T[0], avg_costs.T[1], c='black', label="average error")
+    if len(avg_costs) > 0:
+      axs[0].plot(avg_costs.T[0], avg_costs.T[1], c='black', label="average error")
     axs[0].set_xlabel("Iterations")
     axs[0].set_ylabel("Error")
     axs[0].grid(True)
