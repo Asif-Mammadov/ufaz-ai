@@ -25,7 +25,7 @@ class NeuralNetwork:
         Learning rate.
     lr_reduce : float
         Decrease rate of learning rate after each epoch.
-    cost : <<cost.Class>>. Defaults to MSE. Refer to cost.py
+    cost : <<cost.Class>>. Defaults to MSE. Refer to .cost.py
       Cost function used.
     batch_size : int. Defaults to None.
         Batch size for training. If None, batch size equals to n_instances.
@@ -45,7 +45,7 @@ class NeuralNetwork:
         Y_test (np.ndarray): Labels of test data.
         lr (float): Learning rate.
         lr_reduce (float): Decrease rate of learning rate after each epoch. lr /= lr_reduce
-        cost (_type_, optional): Cost function used. Defaults to MSE. Refer to cost.py
+        cost (_type_, optional): Cost function used. Defaults to MSE. Refer to .cost.py
         batch_size (int, optional): Batch size for training. Defaults to None. If None, batch size equals to n_instances.
         normalization (_type_, optional): Defines the normalization function. Defaults to None.
     """
@@ -80,7 +80,7 @@ class NeuralNetwork:
       The layer is put just before the output layer.
     Args:
         n_nodes (int): Number of nodes(perceptrons) for this layer.
-        activation (activation.Class): Activation function to be used. Refer to activation.py
+        activation (activation.Class): Activation function to be used. Refer to .activation.py
     """
     self.layers.insert(len(self.layers) - 1, n_nodes)
     self.activations.insert(len(self.activations)-1, activation)
@@ -91,7 +91,7 @@ class NeuralNetwork:
     Args:
         index (int): Index of the layer in neural network.
         n_nodes (int): Number of nodes (perceptrons) to set for this layer. Defaults to None.
-        activation (activation.Class): Activation function to be used. Refer to activation.py. Defaults to None.
+        activation (activation.Class): Activation function to be used. Refer to .activation.py. Defaults to None.
 
         If parameter is None, the value won't change.
     """    
@@ -155,11 +155,6 @@ class NeuralNetwork:
           else:
             min_error = new_avr_error
             pos_slope = 0
-          # if new_avr_error - errors > 0:
-          #   pos_slope +=1
-          #   # break
-          # else:
-          #   pos_slope = 0
         if pos_slope >= 10:
           break
         errors = self.avg(self.costs[error_i:new_error_i])

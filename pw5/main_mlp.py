@@ -17,7 +17,7 @@ def main():
     X_train, Y_train, X_test, Y_test = utils.split_train_test(X, Y, test_portion=0.3)
 
     nn = NeuralNetwork(X_train, Y_train, X_test, Y_test, lr=0.01, cost=MSE, batch_size=4, normalization=linear_scaling_max)
-    nn.add_hidden_layer(5, Tanh)
+    nn.add_hidden_layer(5, Relu)
     nn.info()
     nn.train(verbose=True)
     print("-"*20, "Results", "-"*20)

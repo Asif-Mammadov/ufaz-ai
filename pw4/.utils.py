@@ -73,6 +73,3 @@ def shuffleTrainingData(X_train: np.ndarray, Y_train: np.ndarray, seed:int=None)
     j = np.random.randint(0, i)
     X_train[:, [i, j]] = X_train[:, [j, i]]
     Y_train[:, [i, j]] = Y_train[:, [j, i]]
-
-def get_accuracy(conf_matrix):
-  return np.trace(conf_matrix) / conf_matrix.sum()
